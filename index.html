@@ -3,94 +3,109 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Silver Statue Glitch</title>
-  <script type="importmap">
-  {
-    "imports": {
-      "three": "https://esm.sh/three"
-    }
-  }
-</script>
+  <title>Silver Statue Glitch Party</title>
 
-<script type="module">
-  import * as THREE from 'three'; 
-</script>
-  <script src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js" type="module"></script>
-  <script src="https://unpkg.com/@google/model-viewer-effects@latest/dist/model-viewer-effects.js" type="module"></script>
+  <!-- Import map for Three.js (required for effects) -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://esm.sh/three@0.169.0"
+      }
+    }
+  </script>
+
+  <!-- Model Viewer -->
+  <script src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.2.0/model-viewer.min.js" type="module"></script>
   
+  <!-- Model Viewer Effects -->
+  <script src="https://unpkg.com/@google/model-viewer-effects@latest/dist/model-viewer-effects.js" type="module"></script>
+
   <style>
     body { margin:0; background:#000; overflow:hidden; }
     model-viewer {
       width: 100vw;
       height: 100vh;
-      background-color: #0a0a0a;
+      background-color: #050505;
     }
   </style>
 </head>
 <body>
 
-  <model-viewer 
+  <model-viewer
     id="statue"
-    src="sapphoModel.glb" 
+    src="sapphoModel.glb"
     alt="Silver Statue"
-    camera-controls
+    camera-controls="false"
     auto-rotate
-    auto-rotate-delay="800"
-    rotation-per-second="0.12rad"
-    exposure="1.35"
-    shadow-intensity="1.2"
-    shadow-softness="0.8"
-    environment-intensity="0.7"
+    auto-rotate-delay="600"
+    rotation-per-second="0.09rad"
+    exposure="1.4"
+    shadow-intensity="1.5"
+    shadow-softness="0.9"
+    environment-intensity="0.8"
     tone-mapping="aces"
     style="width:100vw; height:100vh;"
   >
-    <!-- Post Effects -->
-    <effect-composer>
-      <bloom-effect 
-        intensity="2.4" 
-        luminance-threshold="0.5" 
-        luminance-smoothing="0.3"
-        radius="1.1">
+    <effect-composer render-mode="quality" msaa="2">
+      
+      <!-- Strong Bloom -->
+      <bloom-effect
+        intensity="3.2"
+        luminance-threshold="0.35"
+        luminance-smoothing="0.25"
+        radius="1.4"
+        blend-mode="add">
       </bloom-effect>
-      
-      <chromatic-aberration-effect 
-        offset-x="0.002" 
-        offset-y="0.002">
-      </chromatic-aberration-effect>
-      
-      <glitch-effect 
-        delay="2.5" 
-        duration="0.3" 
-        strength="0.6"
+
+      <!-- Glitch (more frequent & intense) -->
+      <glitch-effect
+        delay="1.2"
+        duration="0.25"
+        strength="0.85"
         active>
       </glitch-effect>
-      
-      <scanline-effect density="2.0" opacity="0.25"></scanline-effect>
-    </effect-composer>
 
+      <!-- Color Grade (helps with silver + bloom) -->
+      <color-grade-effect
+        tone-mapping="aces"
+        brightness="1.1"
+        contrast="1.15"
+        saturation="1.25">
+      </color-grade-effect>
+
+    </effect-composer>
   </model-viewer>
 
   <script type="module">
     const modelViewer = document.getElementById('statue');
 
-    // Extra custom animation (vertex noise + cracking feel)
+    // Stronger custom animation loop (vertex noise simulation via rotation + occasional stutter)
     let time = 0;
     function animate() {
       time += 0.016;
-      
-      // Occasional temporal stutter
-      if (Math.random() < 0.018) {
-        modelViewer.rotation = (modelViewer.rotation || 0) + 0.12;
+
+      // Occasional temporal stutter / frame skip feel
+      if (Math.random() < 0.022) {
+        if (modelViewer.rotation) {
+          modelViewer.rotation.y += 0.18;
+        }
       }
-      
+
       requestAnimationFrame(animate);
     }
     animate();
 
-    // Keyboard shortcuts for party use
+    // Keyboard controls
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'f') modelViewer.setAttribute('auto-rotate', 'false');
-      if (e.key === 'g') modelViewer.setAttribute('auto-rotate', 'true');
+      if (e.key === 'f' || e.key === 'F') modelViewer.setAttribute('auto-rotate', 'false');
+      if (e.key === 'g' || e.key === 'G') modelViewer.setAttribute('auto-rotate', 'true');
+      if (e.key === 'r' || e.key === 'R') location.reload(); // quick restart
+    });
+
+    // Optional: Lock camera to a nice angle for projection
+    modelViewer.addEventListener('load', () => {
+      modelViewer.cameraOrbit = "45deg 75deg 9m";   // nice 3/4 view
+      modelViewer.cameraTarget = "0m 0.5m 0m";
     });
   </script>
 </body>
