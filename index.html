@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Silver Statue Glitch</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js" type="module"></script>
+  <script src="https://unpkg.com/@google/model-viewer-effects@latest/dist/model-viewer-effects.js" type="module"></script>
+  
+  <style>
+    body { margin:0; background:#000; overflow:hidden; }
+    model-viewer {
+      width: 100vw;
+      height: 100vh;
+      background-color: #0a0a0a;
+    }
+  </style>
+</head>
+<body>
+
+  <model-viewer 
+    id="statue"
+    src="sapphoModel.glb" 
+    alt="Silver Statue"
+    camera-controls
+    auto-rotate
+    auto-rotate-delay="800"
+    rotation-per-second="0.12rad"
+    exposure="1.35"
+    shadow-intensity="1.2"
+    shadow-softness="0.8"
+    environment-intensity="0.7"
+    tone-mapping="aces"
+    style="width:100vw; height:100vh;"
+  >
+    <!-- Post Effects -->
+    <effect-composer>
+      <bloom-effect 
+        intensity="2.4" 
+        luminance-threshold="0.5" 
+        luminance-smoothing="0.3"
+        radius="1.1">
+      </bloom-effect>
+      
+      <chromatic-aberration-effect 
+        offset-x="0.002" 
+        offset-y="0.002">
+      </chromatic-aberration-effect>
+      
+      <glitch-effect 
+        delay="2.5" 
+        duration="0.3" 
+        strength="0.6"
+        active>
+      </glitch-effect>
+      
+      <scanline-effect density="2.0" opacity="0.25"></scanline-effect>
+    </effect-composer>
+
+  </model-viewer>
+
+  <script type="module">
+    const modelViewer = document.getElementById('statue');
+
+    // Extra custom animation (vertex noise + cracking feel)
+    let time = 0;
+    function animate() {
+      time += 0.016;
+      
+      // Occasional temporal stutter
+      if (Math.random() < 0.018) {
+        modelViewer.rotation = (modelViewer.rotation || 0) + 0.12;
+      }
+      
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    // Keyboard shortcuts for party use
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'f') modelViewer.setAttribute('auto-rotate', 'false');
+      if (e.key === 'g') modelViewer.setAttribute('auto-rotate', 'true');
+    });
+  </script>
+</body>
+</html>
